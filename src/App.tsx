@@ -8,7 +8,7 @@ import Layout from "@/components/Layout";
 
 export default function App() {
   return (
-    <Router>
+    <Router basename="/myself">
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
