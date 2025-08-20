@@ -216,16 +216,14 @@ export default function Home() {
                     <p>• Machine Learning & Deep Learning</p>
                     <p>• Data Structures & Algorithms</p>
                     <p>• Computer Vision & NLP</p>
-                    <p>• Distributed Systems</p>
                     <p>• Software Engineering</p>
-                    <p>• Database Systems</p>
                   </div>
                 </div>
               </div>
               <div className="mt-4 pt-4 border-t border-indigo-400/30">
                 <div className="flex items-center justify-between">
                   <div className="text-xs text-indigo-200">
-                    <p>Focus: AI/ML, Full-Stack Development</p>
+                    <p>Focus: AI/ML, RL, LLM</p>
                   </div>
                   <Link
                     to="/about"
