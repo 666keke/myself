@@ -46,7 +46,7 @@ const projects = [
     category: 'Data Science',
     date: '2024',
     github: 'https://github.com/666keke/Shanghai-Gaokao',
-    demo: 'https://shanghai-gaokao.vercel.app',
+    demo: 'https://666keke.github.io/Shanghai-Gaokao',
     featured: true
   },
   {
