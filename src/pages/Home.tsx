@@ -53,7 +53,7 @@ export default function Home() {
                 Haoran Ji
               </h1>
               <p className="text-xl mb-6 text-blue-100">
-                AI/ML Engineer & Full-Stack Developer
+                AI researcher-in-training, interested in LLMs and agents
               </p>
               <p className="text-lg mb-8 text-blue-50 leading-relaxed">
                 Final-year Computer Science student passionate about artificial intelligence, 
