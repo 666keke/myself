@@ -220,7 +220,7 @@ export default function Home() {
                   <p className="text-violet-100 mb-2 font-medium text-lg">Beihang University</p>
                   <p className="text-violet-200 text-sm mb-2">Bachelor of Science</p>
                   <p className="text-violet-200 text-sm mb-3">Computing Mathematics</p>
-                  <p className="text-violet-100 text-sm">Final Year • 2021-2025</p>
+                  <p className="text-violet-100 text-sm">Final Year • 2022-2026</p>
                 </div>
                 <div>
                   <h4 className="text-violet-100 font-medium mb-2 text-sm">Key Coursework</h4>

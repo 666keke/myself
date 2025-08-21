@@ -116,7 +116,7 @@ export default function About() {
                 <div className="border-l-4 border-blue-600 pl-6">
                   <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Bachelor of Science</h3>
                   <p className="text-blue-600 dark:text-blue-400 font-medium">Beihang University (BUAA)</p>
-                  <p className="text-gray-500 dark:text-gray-400">2021 - 2025 (Expected)</p>
+                  <p className="text-gray-500 dark:text-gray-400">2022 - 2026 (Expected)</p>
                   <p className="text-gray-600 dark:text-gray-300 mt-2">
                     Specialization in Artificial Intelligence and Machine Learning. 
                     Relevant coursework: Reinforcement Learning, Computer Vision, Natural Language Processing, 
