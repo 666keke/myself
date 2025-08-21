@@ -76,7 +76,7 @@ export default function About() {
               HJ
             </motion.div>
             <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">About Me</h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">AI researcher-in-training specializing in large language models and autonomous agents, passionate about turning cutting-edge ideas into real-world impact through hands-on projects and collaboration.</p>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">Yet Another AI researcher-in-training. LLM & Agents</p>
           </motion.div>
 
           {/* Personal Story */}
