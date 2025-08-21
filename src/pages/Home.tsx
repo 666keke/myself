@@ -53,11 +53,10 @@ export default function Home() {
                 Haoran Ji
               </h1>
               <p className="text-xl mb-6 text-blue-100">
-                AI researcher-in-training, interested in LLMs and agents
+                Yet Another AI researcher-in-training
               </p>
               <p className="text-lg mb-8 text-blue-50 leading-relaxed">
-                Final-year Computer Science student passionate about artificial intelligence, 
-                machine learning, and building innovative solutions.
+                Final-year AI/ML student passionate about exploring LLMs, agents, and building innovative solutions.
               </p>
               <Link
                 to="/about"
