@@ -81,7 +81,7 @@ export default function Home() {
               <h3 className="font-semibold text-gray-900 dark:text-white ml-3">Location</h3>
             </div>
             <p className="text-gray-600 dark:text-gray-300">Beijing, China</p>
-            <p className="text-gray-600 dark:text-gray-300">Toronto, Canada (2025 Fall)</p>
+            <p className="text-gray-600 dark:text-gray-300">Toronto, Canada (2026 Fall)</p>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Available for remote work</p>
           </motion.div>
 
