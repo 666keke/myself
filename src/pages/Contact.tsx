@@ -1,359 +1,252 @@
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Mail, MapPin, Send, Download, Github, Linkedin, MessageCircle, CheckCircle, AlertCircle } from 'lucide-react'
-import { supabase } from '../lib/supabase'
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-}
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: "easeOut"
-    }
-  }
-}
+import { useState, type ChangeEvent, type FormEvent } from "react";
+import { motion } from "framer-motion";
+import { AlertCircle, CheckCircle, ExternalLink, Send } from "lucide-react";
+import PageIntro from "@/components/PageIntro";
+import { contactChannels, profile } from "@/content/site";
+import { supabase } from "@/lib/supabase";
+import { containerVariants, itemVariants } from "@/lib/motion";
 
 interface FormData {
-  name: string
-  email: string
-  subject: string
-  message: string
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
 }
 
 interface FormStatus {
-  type: 'idle' | 'loading' | 'success' | 'error'
-  message: string
+  type: "idle" | "loading" | "success" | "error";
+  message: string;
 }
-
-const contactInfo = [
-  {
-    icon: Mail,
-    label: 'Email',
-    value: 'jihaoran@buaa.edu.cn',
-    href: 'mailto:jihaoran@buaa.edu.cn',
-    color: 'text-blue-600'
-  },
-  {
-    icon: MapPin,
-    label: 'Location',
-    value: 'Beijing, China',
-    href: 'https://maps.google.com/?q=Beijing,China',
-    color: 'text-red-600'
-  }
-]
-
-const socialLinks = [
-  {
-    icon: Github,
-    label: 'GitHub',
-    href: 'https://github.com/666keke',
-    color: 'hover:text-gray-900 dark:hover:text-white'
-  },
-  {
-    icon: Linkedin,
-    label: 'LinkedIn',
-    href: 'https://www.linkedin.com/in/haoran-ji-b9994231b/',
-    color: 'hover:text-blue-600'
-  }
-]
 
 export default function Contact() {
   const [formData, setFormData] = useState<FormData>({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  })
-  
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
   const [status, setStatus] = useState<FormStatus>({
-    type: 'idle',
-    message: ''
-  })
+    type: "idle",
+    message: "",
+  });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
-  }
+  const handleInputChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = event.target;
+    setFormData((current) => ({ ...current, [name]: value }));
+  };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setStatus({ type: 'loading', message: 'Sending message...' })
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    setStatus({ type: "loading", message: "Sending message..." });
 
     try {
-      const { error } = await supabase
-        .from('contact_messages')
-        .insert([
-          {
-            name: formData.name,
-            email: formData.email,
-            subject: formData.subject,
-            message: formData.message
-          }
-        ])
+      const { error } = await supabase.from("contact_messages").insert([
+        {
+          name: formData.name,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+        },
+      ]);
 
-      if (error) throw error
+      if (error) {
+        throw error;
+      }
 
       setStatus({
-        type: 'success',
-        message: 'Message sent successfully! I\'ll get back to you soon.'
-      })
-      
-      // Reset form
+        type: "success",
+        message: "Message sent successfully. I will get back to you soon.",
+      });
       setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        message: ''
-      })
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+      });
     } catch (error) {
-      console.error('Error sending message:', error)
+      console.error("Error sending message:", error);
+      const message = error instanceof Error ? error.message : "Unknown error";
       setStatus({
-        type: 'error',
-        message: 'Failed to send message. Please try again or contact me directly.'
-      })
+        type: "error",
+        message: `Message failed to send. ${message}`,
+      });
     }
-  }
-
-  const handleDownloadResume = () => {
-    // In a real application, this would download the actual resume file
-    const link = document.createElement('a')
-    link.href = '/resume-haoran-ji.pdf' // This file should be in the public folder
-    link.download = 'Haoran-Ji-Resume.pdf'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
+  };
 
   return (
-    <div className="min-h-screen pt-16 bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="pb-8 pt-10">
+      <section className="page-wrap">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="space-y-16"
+          className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]"
         >
-          {/* Header */}
-          <motion.div variants={itemVariants} className="text-center">
-            <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-              Get In Touch
-            </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              I'm always open to discussing new opportunities, interesting projects, 
-              or just having a chat about technology and innovation.
-            </p>
+          <motion.div variants={itemVariants}>
+            <PageIntro
+              eyebrow="Contact"
+              title="Open to research collaborations, product roles, and conversations worth having."
+              description="The form works best for project inquiries or role discussions. Direct channels are listed alongside it if you prefer a faster route."
+            />
+
+            <div className="editorial-list mt-10">
+              {contactChannels.map((channel) => (
+                <a
+                  key={channel.label}
+                  href={channel.href}
+                  target={channel.href.startsWith("http") ? "_blank" : undefined}
+                  rel={channel.href.startsWith("http") ? "noreferrer" : undefined}
+                  className="grid gap-3 py-5 md:grid-cols-[140px_1fr_auto]"
+                >
+                  <span className="mono text-[0.64rem] text-[color:var(--muted)]">
+                    {channel.label}
+                  </span>
+                  <span className="text-xl text-[color:var(--ink)]">
+                    {channel.value}
+                  </span>
+                  <ExternalLink className="h-4 w-4 self-center text-[color:var(--muted)]" />
+                </a>
+              ))}
+            </div>
+
+            <div className="paper-strip mt-10 rounded-[2rem] p-6 sm:p-8">
+              <p className="mono text-[0.68rem] text-[color:var(--muted)]">
+                Availability
+              </p>
+              <p className="display-line mt-5 text-[color:var(--ink)]">
+                Remote-friendly now, preparing for Toronto in Fall 2026.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <a
+                  href={profile.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="button-outline"
+                >
+                  GitHub
+                </a>
+                <a
+                  href={profile.linkedin}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="button-solid"
+                >
+                  LinkedIn
+                </a>
+              </div>
+            </div>
           </motion.div>
 
-          <div className="grid lg:grid-cols-2 gap-12">
-            {/* Contact Information */}
-            <motion.div variants={itemVariants} className="space-y-8">
-              <div>
-                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Contact Information</h2>
-                <div className="space-y-6">
-                  {contactInfo.map((info, index) => {
-                    const IconComponent = info.icon
-                    return (
-                      <motion.a
-                        key={index}
-                        href={info.href}
-                        target={info.href.startsWith('http') ? '_blank' : undefined}
-                        rel={info.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="flex items-center p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group"
-                      >
-                        <div className={`p-3 rounded-xl ${info.color} bg-opacity-10 mr-4`}>
-                          <IconComponent className={`w-6 h-6 ${info.color}`} />
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">{info.label}</p>
-                          <p className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                            {info.value}
-                          </p>
-                        </div>
-                      </motion.a>
-                    )
-                  })}
-                </div>
-              </div>
-
-              {/* Social Links */}
-              <div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Connect With Me</h3>
-                <div className="flex space-x-4">
-                  {socialLinks.map((social, index) => {
-                    const IconComponent = social.icon
-                    return (
-                      <motion.a
-                        key={index}
-                        href={social.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        initial={{ opacity: 0, scale: 0 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: index * 0.1 }}
-                        className={`p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 text-gray-600 dark:text-gray-400 ${social.color}`}
-                      >
-                        <IconComponent className="w-6 h-6" />
-                      </motion.a>
-                    )
-                  })}
-                </div>
-              </div>
-
-              {/* Resume Download */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-2xl font-bold mb-2">Download Resume</h3>
-                    <p className="text-blue-100">Get a detailed overview of my experience and skills</p>
-                  </div>
-                  <button
-                    onClick={handleDownloadResume}
-                    className="flex items-center px-6 py-3 bg-white text-blue-600 rounded-xl font-semibold hover:bg-gray-100 transition-colors duration-300"
-                  >
-                    <Download className="w-5 h-5 mr-2" />
-                    Download
-                  </button>
-                </div>
-              </motion.div>
-            </motion.div>
-
-            {/* Contact Form */}
-            <motion.div variants={itemVariants}>
-              <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg">
-                <div className="flex items-center mb-6">
-                  <MessageCircle className="w-8 h-8 text-blue-600 mr-3" />
-                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Send Message</h2>
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                        Full Name
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
-                        placeholder="Your full name"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                        Email Address
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
-                        placeholder="your.email@example.com"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      Subject
-                    </label>
+          <motion.div variants={itemVariants}>
+            <div className="paper-strip rounded-[2rem] p-6 sm:p-8 lg:p-10">
+              <span className="kicker">Form</span>
+              <h2 className="section-title mt-6 text-[color:var(--ink)]">
+                Say hello.
+              </h2>
+              <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="mono text-[0.64rem] text-[color:var(--muted)]">
+                      Name
+                    </span>
                     <input
                       type="text"
-                      id="subject"
-                      name="subject"
-                      value={formData.subject}
+                      name="name"
+                      value={formData.name}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
-                      placeholder="What's this about?"
+                      className="mt-3 w-full border-b border-[color:var(--line-strong)] bg-transparent px-0 py-3 text-lg text-[color:var(--ink)] outline-none placeholder:text-[color:var(--muted)]"
+                      placeholder="Your name"
                     />
-                  </div>
-
-                  <div>
-                    <label htmlFor="message" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      Message
-                    </label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      value={formData.message}
+                  </label>
+                  <label className="block">
+                    <span className="mono text-[0.64rem] text-[color:var(--muted)]">
+                      Email
+                    </span>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
                       onChange={handleInputChange}
                       required
-                      rows={6}
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors resize-none"
-                      placeholder="Tell me about your project, opportunity, or just say hello!"
+                      className="mt-3 w-full border-b border-[color:var(--line-strong)] bg-transparent px-0 py-3 text-lg text-[color:var(--ink)] outline-none placeholder:text-[color:var(--muted)]"
+                      placeholder="name@example.com"
                     />
-                  </div>
+                  </label>
+                </div>
 
-                  {/* Status Message */}
-                  {status.type !== 'idle' && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className={`flex items-center p-4 rounded-xl ${
-                        status.type === 'success'
-                          ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300'
-                          : status.type === 'error'
-                          ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300'
-                          : 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                      }`}
-                    >
-                      {status.type === 'success' && <CheckCircle className="w-5 h-5 mr-2" />}
-                      {status.type === 'error' && <AlertCircle className="w-5 h-5 mr-2" />}
-                      {status.type === 'loading' && (
-                        <div className="w-5 h-5 mr-2 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                      )}
-                      <span className="text-sm font-medium">{status.message}</span>
-                    </motion.div>
-                  )}
+                <label className="block">
+                  <span className="mono text-[0.64rem] text-[color:var(--muted)]">
+                    Subject
+                  </span>
+                  <input
+                    type="text"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleInputChange}
+                    required
+                    className="mt-3 w-full border-b border-[color:var(--line-strong)] bg-transparent px-0 py-3 text-lg text-[color:var(--ink)] outline-none placeholder:text-[color:var(--muted)]"
+                    placeholder="What is this about?"
+                  />
+                </label>
 
-                  <button
-                    type="submit"
-                    disabled={status.type === 'loading'}
-                    className="w-full flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                <label className="block">
+                  <span className="mono text-[0.64rem] text-[color:var(--muted)]">
+                    Message
+                  </span>
+                  <textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    required
+                    rows={7}
+                    className="mt-3 w-full resize-none border border-[color:var(--line)] bg-[rgba(249,244,236,0.62)] px-4 py-4 text-lg text-[color:var(--ink)] outline-none placeholder:text-[color:var(--muted)]"
+                    placeholder="Tell me about the work, the role, or the problem you want to solve."
+                  />
+                </label>
+
+                {status.type !== "idle" && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-3 text-sm"
+                    style={{
+                      color:
+                        status.type === "success"
+                          ? "#2f6643"
+                          : status.type === "error"
+                            ? "#9e3d2a"
+                            : "var(--muted)",
+                    }}
                   >
-                    {status.type === 'loading' ? (
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                    ) : (
-                      <Send className="w-5 h-5 mr-2" />
+                    {status.type === "success" && <CheckCircle className="h-4 w-4" />}
+                    {status.type === "error" && <AlertCircle className="h-4 w-4" />}
+                    {status.type === "loading" && (
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                     )}
-                    {status.type === 'loading' ? 'Sending...' : 'Send Message'}
-                  </button>
-                </form>
-              </div>
-            </motion.div>
-          </div>
+                    <span>{status.message}</span>
+                  </motion.div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={status.type === "loading"}
+                  className="button-solid w-full disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {status.type === "loading" ? (
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
+                  {status.type === "loading" ? "Sending..." : "Send message"}
+                </button>
+              </form>
+            </div>
+          </motion.div>
         </motion.div>
-      </div>
+      </section>
     </div>
-  )
+  );
 }
