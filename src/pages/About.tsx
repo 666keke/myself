@@ -22,8 +22,8 @@ export default function About() {
           <motion.div variants={itemVariants}>
             <PageIntro
               eyebrow="About"
-              title="A researcher’s profile told with less performance and more structure."
-              description="I value precision, legibility, and work that can stand up to scrutiny after the first good impression wears off."
+              title="The person behind the projects."
+              description="I value precision, clear thinking, and work that holds up under close examination."
             />
           </motion.div>
           <motion.div

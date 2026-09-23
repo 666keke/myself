@@ -46,8 +46,8 @@ export default function Projects() {
           <motion.div variants={itemVariants}>
             <PageIntro
               eyebrow="Projects"
-              title="An archive of systems work, research experiments, and applied analysis."
-              description="Less gallery, more index. The useful question is what each project had to solve and how much structure it required."
+              title="Selected work, built to be useful."
+              description="A collection of AI systems, research experiments, and applied analysis—each shaped by a practical problem."
             />
           </motion.div>
           <motion.div
@@ -65,7 +65,7 @@ export default function Projects() {
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
                   placeholder="Title, topic, or stack"
-                  className="w-full rounded-full border border-[color:var(--line)] bg-[rgba(249,244,236,0.72)] py-3 pl-11 pr-4 text-[color:var(--ink)] outline-none transition focus:border-[color:var(--line-strong)]"
+                  className="w-full rounded-full border border-[color:var(--line)] bg-white py-3 pl-11 pr-4 text-[color:var(--ink)] outline-none transition focus:border-[color:var(--accent)]"
                 />
               </div>
             </label>

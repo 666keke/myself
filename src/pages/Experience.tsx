@@ -16,8 +16,8 @@ export default function Experience() {
           <motion.div variants={itemVariants}>
             <PageIntro
               eyebrow="Experience"
-              title="Work that had to function under real constraints, not just read well on a slide."
-              description="Professional internships, institute research, competitions, and leadership roles. Different contexts, same preference for clear structure and useful output."
+              title="A record of building and learning."
+              description="Internships, research, competitions, and leadership roles have shaped how I solve problems and work with others."
             />
           </motion.div>
           <motion.div

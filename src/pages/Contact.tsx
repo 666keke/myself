@@ -87,8 +87,8 @@ export default function Contact() {
           <motion.div variants={itemVariants}>
             <PageIntro
               eyebrow="Contact"
-              title="Open to research collaborations, product roles, and conversations worth having."
-              description="The form works best for project inquiries or role discussions. Direct channels are listed alongside it if you prefer a faster route."
+              title="Let’s make something useful."
+              description="I’m open to research collaborations, product roles, and thoughtful conversations. Send a note or reach out directly."
             />
 
             <div className="editorial-list mt-10">
@@ -202,7 +202,7 @@ export default function Contact() {
                     onChange={handleInputChange}
                     required
                     rows={7}
-                    className="mt-3 w-full resize-none border border-[color:var(--line)] bg-[rgba(249,244,236,0.62)] px-4 py-4 text-lg text-[color:var(--ink)] outline-none placeholder:text-[color:var(--muted)]"
+                    className="mt-3 w-full resize-none rounded-xl border border-[color:var(--line)] bg-white px-4 py-4 text-lg text-[color:var(--ink)] outline-none placeholder:text-[color:var(--muted)]"
                     placeholder="Tell me about the work, the role, or the problem you want to solve."
                   />
                 </label>
@@ -217,7 +217,7 @@ export default function Contact() {
                         status.type === "success"
                           ? "#2f6643"
                           : status.type === "error"
-                            ? "#9e3d2a"
+                            ? "#b94d3d"
                             : "var(--muted)",
                     }}
                   >
