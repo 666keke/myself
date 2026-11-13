@@ -18,6 +18,32 @@ export const homeStats = [
   { label: "Availability", value: "Open to research and product roles" },
 ];
 
+export const focusAreas = [
+  "RL for tool use",
+  "LLM agents",
+  "Retrieval systems",
+  "Inference at scale",
+  "Causal inference",
+  "Pose understanding",
+];
+
+/** Tools that appear across the projects and roles below. */
+export const stack = [
+  "Python",
+  "PaddlePaddle",
+  "VeRL",
+  "LangChain",
+  "BGE-m3",
+  "Triton",
+  "Kubernetes",
+  "Docker",
+  "ViTPose",
+  "LoRA",
+  "TypeScript",
+  "Next.js",
+  "React",
+];
+
 export const strengths = [
   {
     title: "Research with product taste",
@@ -46,8 +72,6 @@ export const featuredProjects = [
     tags: ["Python", "Docker", "Kubernetes", "Triton"],
     link: "https://github.com/666keke/distributed-pipeline-yolo",
     demo: "",
-    accent:
-      "from-[#201b17] via-[#3f3528] to-[#76582d]",
   },
   {
     title: "Shanghai Gaokao Data Analysis",
@@ -58,8 +82,6 @@ export const featuredProjects = [
     tags: ["TypeScript", "Next.js", "Data Analysis"],
     link: "https://github.com/666keke/Shanghai-Gaokao",
     demo: "https://666keke.github.io/Shanghai-Gaokao",
-    accent:
-      "from-[#5e4425] via-[#876235] to-[#d6b173]",
   },
   {
     title: "Knowledge Graph Generator",
@@ -70,8 +92,6 @@ export const featuredProjects = [
     tags: ["Python", "NLP", "Graph Database"],
     link: "",
     demo: "",
-    accent:
-      "from-[#352a1f] via-[#4f3f2b] to-[#a2804f]",
   },
 ];
 

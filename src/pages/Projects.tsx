@@ -1,181 +1,138 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { ExternalLink, Github, Search } from "lucide-react";
-import PageIntro from "@/components/PageIntro";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import { ArrowUpRight, Github, Search, X } from "lucide-react";
+import PageHead from "@/components/PageHead";
 import { featuredProjects, labProjects } from "@/content/site";
-import { containerVariants, itemVariants } from "@/lib/motion";
+import { ease, spring } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
 const archive = [
   ...featuredProjects,
-  ...labProjects.map((project) => ({
-    ...project,
-    category: "Research",
-    link: "",
-    demo: "",
-  })),
+  ...labProjects.map((project) => ({ ...project, category: "Research", link: "", demo: "" })),
 ];
-
 const categories = ["All", ...new Set(archive.map((item) => item.category))];
 
 export default function Projects() {
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [category, setCategory] = useState("All");
+  const [query, setQuery] = useState("");
+  const q = query.trim().toLowerCase();
 
-  const filteredProjects = archive.filter((project) => {
-    const query = searchTerm.trim().toLowerCase();
-    const matchesCategory =
-      selectedCategory === "All" || project.category === selectedCategory;
-    const matchesSearch =
-      query.length === 0 ||
-      project.title.toLowerCase().includes(query) ||
-      project.description.toLowerCase().includes(query) ||
-      project.tags.some((tag) => tag.toLowerCase().includes(query));
-
-    return matchesCategory && matchesSearch;
-  });
+  const filtered = archive.filter(
+    (p) =>
+      (category === "All" || p.category === category) &&
+      (!q ||
+        p.title.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q) ||
+        p.tags.some((t) => t.toLowerCase().includes(q))),
+  );
 
   return (
-    <div className="pb-8 pt-10">
-      <section className="page-wrap">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="grid gap-10 lg:grid-cols-[1fr_0.8fr]"
-        >
-          <motion.div variants={itemVariants}>
-            <PageIntro
-              eyebrow="Projects"
-              title="Selected work, built to be useful."
-              description="A collection of AI systems, research experiments, and applied analysis—each shaped by a practical problem."
-            />
-          </motion.div>
-          <motion.div
-            variants={itemVariants}
-            className="paper-strip rounded-[2rem] p-6 sm:p-8"
-          >
-            <label className="block">
-              <span className="mono text-[0.68rem] text-[color:var(--muted)]">
-                Search
-              </span>
-              <div className="relative mt-4">
-                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[color:var(--muted)]" />
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(event) => setSearchTerm(event.target.value)}
-                  placeholder="Title, topic, or stack"
-                  className="w-full rounded-full border border-[color:var(--line)] bg-white py-3 pl-11 pr-4 text-[color:var(--ink)] outline-none transition focus:border-[color:var(--accent)]"
-                />
-              </div>
-            </label>
-            <div className="mt-6">
-              <p className="mono text-[0.68rem] text-[color:var(--muted)]">
-                Filters
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    type="button"
-                    onClick={() => setSelectedCategory(category)}
-                    className={
-                      selectedCategory === category
-                        ? "button-solid px-5 py-2.5"
-                        : "button-outline px-5 py-2.5"
-                    }
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      </section>
+    <>
+      <PageHead eyebrow="Projects" title="Selected work, built to be useful.">
+        <p className="lede">AI systems, research experiments, and applied analysis, each shaped by a practical problem.</p>
+      </PageHead>
 
-      <section className="page-wrap mt-20">
-        <motion.div
-          key={`${selectedCategory}:${searchTerm}`}
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <div className="editorial-list">
-            {filteredProjects.length === 0 && (
-              <motion.div variants={itemVariants} className="py-10">
-                <h2 className="display-line text-[color:var(--ink)]">
-                  No matching projects.
-                </h2>
-                <p className="body-copy mt-4">
-                  Try a different term or broaden the filter.
-                </p>
-              </motion.div>
-            )}
-
-            {filteredProjects.map((project, index) => (
-              <motion.article
-                key={`${project.title}-${project.date}`}
-                variants={itemVariants}
-                className="grid gap-6 py-8 lg:grid-cols-[90px_220px_1fr_auto]"
+      <section className="wrap filters" aria-label="Filter projects">
+        <LayoutGroup id="filters">
+          <div className="seg" role="tablist" aria-label="Category">
+            {categories.map((c) => (
+              <button
+                key={c}
+                type="button"
+                role="tab"
+                aria-selected={category === c}
+                onClick={() => setCategory(c)}
+                className={cn("seg__item", category === c && "is-active")}
               >
-                <p className="mono pt-1 text-[0.64rem] text-[color:var(--muted)]">
-                  {String(index + 1).padStart(2, "0")}
-                </p>
-                <div>
-                  <p className="mono text-[0.64rem] text-[color:var(--accent)]">
-                    {project.category}
-                  </p>
-                  <p className="mt-3 text-base text-[color:var(--muted)]">
-                    {project.date}
-                  </p>
-                </div>
-                <div>
-                  <h2 className="display-line max-w-4xl text-[color:var(--ink)]">
-                    {project.title}
-                  </h2>
-                  <p className="body-copy mt-4 max-w-4xl">
-                    {project.description}
-                  </p>
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {project.tags.map((tag) => (
-                      <span key={tag} className="tag">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-3 lg:flex-col lg:items-end">
-                  {project.link ? (
-                    <a
-                      href={project.link}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="button-outline"
-                    >
-                      <Github className="h-4 w-4" />
-                      Repository
-                    </a>
-                  ) : (
-                    <span className="tag">Archive only</span>
-                  )}
-                  {project.demo && (
-                    <a
-                      href={project.demo}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="button-solid"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                      Live demo
-                    </a>
-                  )}
-                </div>
-              </motion.article>
+                {category === c && <motion.span layoutId="seg-active" className="seg__bg" transition={spring} />}
+                <span className="relative">{c}</span>
+              </button>
             ))}
           </div>
-        </motion.div>
+        </LayoutGroup>
+        <label className="search">
+          <Search size={16} aria-hidden="true" />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search title, topic, or stack"
+            aria-label="Search projects"
+          />
+          <AnimatePresence>
+            {query && (
+              <motion.button
+                type="button"
+                className="search__clear"
+                aria-label="Clear search"
+                onClick={() => setQuery("")}
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.6 }}
+                transition={{ duration: 0.16 }}
+              >
+                <X size={14} />
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </label>
       </section>
-    </div>
+
+      <section className="wrap projects">
+        <p className="mono projects__count" aria-live="polite">
+          {filtered.length} {filtered.length === 1 ? "project" : "projects"}
+        </p>
+        <motion.ul layout className="projects__grid">
+          <AnimatePresence mode="popLayout" initial={false}>
+            {filtered.map((p) => (
+              <motion.li
+                layout
+                key={p.title}
+                className="project"
+                initial={{ opacity: 0, scale: 0.97, y: 8 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.18, ease: ease.inOut } }}
+                transition={{ layout: spring, duration: 0.4, ease: ease.out }}
+              >
+                <div className="project__top">
+                  <span className="mono">{p.category}</span>
+                  <span className="mono">{p.date}</span>
+                </div>
+                <h2 className="h3">{p.title}</h2>
+                <p className="body">{p.description}</p>
+                <div className="project__tags">
+                  {p.tags.map((t) => (
+                    <span key={t} className="chip">{t}</span>
+                  ))}
+                </div>
+                <div className="project__links">
+                  {p.link && (
+                    <a className="link-arrow" href={p.link} target="_blank" rel="noreferrer">
+                      <Github size={15} /> <span className="u">Repository</span>
+                    </a>
+                  )}
+                  {p.demo && (
+                    <a className="link-arrow" href={p.demo} target="_blank" rel="noreferrer">
+                      <span className="u">Live demo</span> <ArrowUpRight size={15} />
+                    </a>
+                  )}
+                  {!p.link && !p.demo && <span className="mono project__private">Not public yet</span>}
+                </div>
+              </motion.li>
+            ))}
+          </AnimatePresence>
+        </motion.ul>
+        <AnimatePresence>
+          {filtered.length === 0 && (
+            <motion.div className="empty" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <p className="h3">Nothing matches “{query}”.</p>
+              <button type="button" className="btn btn-line" onClick={() => { setQuery(""); setCategory("All"); }}>
+                Reset filters
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </section>
+    </>
   );
 }

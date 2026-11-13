@@ -1,192 +1,80 @@
-import { motion } from "framer-motion";
-import PageIntro from "@/components/PageIntro";
+import { useRef } from "react";
+import { motion, useScroll, useSpring } from "framer-motion";
+import PageHead from "@/components/PageHead";
+import { Reveal, RevealItem } from "@/components/Reveal";
 import { competitions, experience, leadership } from "@/content/site";
-import { containerVariants, itemVariants } from "@/lib/motion";
 
 export default function Experience() {
+  const timelineRef = useRef<HTMLOListElement>(null);
+  const { scrollYProgress } = useScroll({ target: timelineRef, offset: ["start 70%", "end 50%"] });
+  const progress = useSpring(scrollYProgress, { stiffness: 200, damping: 40 });
+
   return (
-    <div className="pb-8 pt-10">
-      <section className="page-wrap">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="grid gap-10 lg:grid-cols-[1fr_0.82fr]"
-        >
-          <motion.div variants={itemVariants}>
-            <PageIntro
-              eyebrow="Experience"
-              title="A record of building and learning."
-              description="Internships, research, competitions, and leadership roles have shaped how I solve problems and work with others."
-            />
-          </motion.div>
-          <motion.div
-            variants={itemVariants}
-            className="paper-strip rounded-[2rem] p-6 sm:p-8"
-          >
-            <p className="mono text-[0.68rem] text-[color:var(--muted)]">
-              Current arc
-            </p>
-            <div className="editorial-list mt-6">
-              <div className="grid gap-2 py-4 sm:grid-cols-[150px_1fr]">
-                <span className="mono text-[0.64rem] text-[color:var(--muted)]">
-                  Mode
-                </span>
-                <span className="text-lg text-[color:var(--ink)]">
-                  Product-minded AI and research implementation
-                </span>
-              </div>
-              <div className="grid gap-2 py-4 sm:grid-cols-[150px_1fr]">
-                <span className="mono text-[0.64rem] text-[color:var(--muted)]">
-                  Focus
-                </span>
-                <span className="text-lg text-[color:var(--ink)]">
-                  RL for LLMs, tooling, and applied ML systems
-                </span>
-              </div>
-              <div className="grid gap-2 py-4 sm:grid-cols-[150px_1fr]">
-                <span className="mono text-[0.64rem] text-[color:var(--muted)]">
-                  Preference
-                </span>
-                <span className="text-lg text-[color:var(--ink)]">
-                  High-agency work with technical accountability
-                </span>
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
+    <>
+      <PageHead eyebrow="Experience" title="A record of building and learning.">
+        <p className="lede">Internships, research, competitions, and leadership that shaped how I solve problems and work with others.</p>
+      </PageHead>
+
+      <section className="wrap section">
+        <ol ref={timelineRef} className="timeline">
+          <span className="timeline__rail" aria-hidden="true">
+            <motion.span className="timeline__fill" style={{ scaleY: progress }} />
+          </span>
+          {experience.map((entry) => (
+            <Reveal key={entry.company} as="div" className="timeline__entry">
+              <RevealItem className="timeline__when">
+                <span className="timeline__node" aria-hidden="true" />
+                <span className="mono">{entry.duration}</span>
+                <span className="mono timeline__type">{entry.type}</span>
+              </RevealItem>
+              <RevealItem className="timeline__body">
+                <h2 className="h3">{entry.role}</h2>
+                <p className="timeline__org">{entry.company} · {entry.location}</p>
+                <p className="body">{entry.summary}</p>
+                <ul className="timeline__bullets">
+                  {entry.bullets.map((b) => <li key={b}>{b}</li>)}
+                </ul>
+                <div className="project__tags">
+                  {entry.stack.map((s) => <span key={s} className="chip">{s}</span>)}
+                </div>
+              </RevealItem>
+            </Reveal>
+          ))}
+        </ol>
       </section>
 
-      <section className="page-wrap mt-20">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.18 }}
-        >
-          <motion.div variants={itemVariants}>
-            <span className="kicker">Timeline</span>
-            <h2 className="section-title mt-6 text-[color:var(--ink)]">
-              Professional and research roles
-            </h2>
-          </motion.div>
-
-          <div className="editorial-list mt-10">
-            {experience.map((entry, index) => (
-              <motion.article
-                key={entry.company}
-                variants={itemVariants}
-                className="grid gap-6 py-8 lg:grid-cols-[90px_230px_1fr]"
-              >
-                <p className="mono pt-1 text-[0.64rem] text-[color:var(--muted)]">
-                  {String(index + 1).padStart(2, "0")}
-                </p>
-                <div>
-                  <p className="mono text-[0.64rem] text-[color:var(--accent)]">
-                    {entry.type}
-                  </p>
-                  <p className="mt-3 text-lg text-[color:var(--ink)]">
-                    {entry.duration}
-                  </p>
-                  <p className="mt-1 text-base text-[color:var(--muted)]">
-                    {entry.location}
-                  </p>
+      <section className="wrap section xp-split">
+        <div>
+          <h2 className="h2">Competitions</h2>
+          <Reveal as="ul" className="ledger">
+            {competitions.map((c) => (
+              <RevealItem as="li" key={c.title} className="ledger__row">
+                <div className="ledger__head">
+                  <h3>{c.title}</h3>
+                  <span className={c.award.startsWith("First") ? "chip chip--award" : "chip"}>{c.award}</span>
                 </div>
-                <div>
-                  <h3 className="display-line text-[color:var(--ink)]">
-                    {entry.role}
-                  </h3>
-                  <p className="mt-2 text-xl text-[color:var(--accent)]">
-                    {entry.company}
-                  </p>
-                  <p className="body-copy mt-4 max-w-3xl">{entry.summary}</p>
-                  <div className="mt-5 grid gap-3">
-                    {entry.bullets.map((bullet) => (
-                      <p key={bullet} className="body-copy">
-                        {bullet}
-                      </p>
-                    ))}
-                  </div>
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {entry.stack.map((item) => (
-                      <span key={item} className="tag">
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </motion.article>
+                <p className="mono ledger__sub">{c.date} · {c.role}</p>
+                <p className="body">{c.summary}</p>
+              </RevealItem>
             ))}
-          </div>
-        </motion.div>
+          </Reveal>
+        </div>
+        <div>
+          <h2 className="h2">Leadership</h2>
+          <Reveal as="ul" className="ledger">
+            {leadership.map((l) => (
+              <RevealItem as="li" key={l.organization} className="ledger__row">
+                <div className="ledger__head">
+                  <h3>{l.role}</h3>
+                  <span className="mono ledger__sub">{l.duration}</span>
+                </div>
+                <p className="ledger__org">{l.organization}</p>
+                <p className="body">{l.impact}</p>
+              </RevealItem>
+            ))}
+          </Reveal>
+        </div>
       </section>
-
-      <section className="page-wrap mt-24">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.18 }}
-          className="grid gap-10 lg:grid-cols-[1fr_1fr]"
-        >
-          <motion.div variants={itemVariants}>
-            <span className="kicker">Competitions</span>
-            <div className="editorial-list mt-8">
-              {competitions.map((competition) => (
-                <article
-                  key={competition.title}
-                  className="grid gap-4 py-5 md:grid-cols-[140px_1fr]"
-                >
-                  <div>
-                    <p className="mono text-[0.64rem] text-[color:var(--accent)]">
-                      {competition.date}
-                    </p>
-                    <p className="mt-2 text-sm text-[color:var(--muted)]">
-                      {competition.award}
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="text-3xl text-[color:var(--ink)]">
-                      {competition.title}
-                    </h3>
-                    <p className="mt-2 text-lg text-[color:var(--accent)]">
-                      {competition.role}
-                    </p>
-                    <p className="body-copy mt-4">{competition.summary}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div variants={itemVariants}>
-            <span className="kicker">Leadership</span>
-            <div className="editorial-list mt-8">
-              {leadership.map((item) => (
-                <article
-                  key={item.organization}
-                  className="grid gap-4 py-5 md:grid-cols-[160px_1fr]"
-                >
-                  <div>
-                    <p className="mono text-[0.64rem] text-[color:var(--muted)]">
-                      {item.duration}
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="text-3xl text-[color:var(--ink)]">
-                      {item.role}
-                    </h3>
-                    <p className="mt-2 text-lg text-[color:var(--accent)]">
-                      {item.organization}
-                    </p>
-                    <p className="body-copy mt-4">{item.impact}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </motion.div>
-        </motion.div>
-      </section>
-    </div>
+    </>
   );
 }

@@ -1,33 +1,35 @@
 import type { ReactNode } from "react";
-import { ArrowUpRight } from "lucide-react";
-import { Link } from "react-router-dom";
 import Navigation from "./Navigation";
+import { DiscoverButton } from "@/components/block/discover-button";
+import FlipText from "@/components/block/flip-text";
 import { profile } from "@/content/site";
 
-interface LayoutProps {
-  children: ReactNode;
-}
-
-export default function Layout({ children }: LayoutProps) {
+export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <div className="site-shell">
+    <div className="shell">
+      <a href="#main" className="skip-link">Skip to content</a>
       <Navigation />
-      <main>{children}</main>
-      <footer className="page-wrap pb-8">
-        <div className="rounded-[22px] bg-[color:var(--ink)] px-7 py-10 text-white sm:px-10 sm:py-12 lg:px-14">
-          <p className="mono text-[0.65rem] text-[#bfe1b0]">HAVE SOMETHING IN MIND?</p>
-          <div className="mt-5 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-            <h2 className="max-w-2xl text-[clamp(2.4rem,5vw,5rem)] leading-[1.04]">Let’s build what’s next.</h2>
-            <Link to="/contact" className="inline-flex w-fit items-center gap-5 rounded-full bg-[#c6e5a9] px-6 py-4 text-sm font-bold text-[color:var(--ink)] transition hover:-translate-y-1">
-              Get in touch <ArrowUpRight className="h-5 w-5" />
-            </Link>
+      <main id="main">{children}</main>
+
+      <footer className="footer">
+        <div className="wrap">
+          <div className="footer__cta">
+            <p className="eyebrow">Have something in mind?</p>
+            <h2 className="display footer__title">
+              Let’s build{" "}
+              <FlipText className="footer__flip" duration={4.2}>
+                what’s next.
+              </FlipText>
+            </h2>
+            <DiscoverButton to="/contact" label="Start a conversation" className="discover--dark" />
           </div>
-          <div className="mt-16 flex flex-col gap-4 border-t border-white/20 pt-6 text-xs text-[#bacbc0] sm:flex-row sm:items-center sm:justify-between">
-            <span>© {new Date().getFullYear()} {profile.name}. Built with care.</span>
-            <div className="flex gap-6">
-              <a href={profile.github} target="_blank" rel="noreferrer" className="hover:text-white">GitHub</a>
-              <a href={profile.linkedin} target="_blank" rel="noreferrer" className="hover:text-white">LinkedIn</a>
-              <a href={`mailto:${profile.email}`} className="hover:text-white">Email</a>
+          <hr className="rule" />
+          <div className="footer__meta">
+            <span>© {new Date().getFullYear()} {profile.name}</span>
+            <div className="footer__links">
+              <a href={profile.github} target="_blank" rel="noreferrer">GitHub</a>
+              <a href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
+              <a href={`mailto:${profile.email}`}>Email</a>
             </div>
           </div>
         </div>

@@ -1,0 +1,66 @@
+/* Hero stage: window pinned to the corner and cropped by the frame, reward card straddles it. */
+.stage { position: relative; height: clamp(420px, 46vw, 560px); border-radius: 28px; overflow: hidden; background:
+  radial-gradient(120% 90% at 100% 0%, var(--accent-soft) 0%, transparent 60%),
+  radial-gradient(90% 80% at 0% 100%, var(--secondary-soft) 0%, transparent 55%), var(--sunk);
+  box-shadow: 0 0 0 1px var(--line) inset; isolation: isolate; }
+.stage__window { position: absolute; left: 9%; top: 11%; width: 760px; height: 560px; border-radius: 14px; background: var(--surface); box-shadow: var(--shadow-window); overflow: hidden; }
+.win__bar { display: flex; align-items: center; gap: 14px; height: 38px; padding: 0 14px; border-bottom: 1px solid var(--line); background: var(--bg); }
+.win__lights { display: flex; gap: 7px; }
+.win__lights i { width: 11px; height: 11px; border-radius: 99px; background: var(--line-strong); }
+.win__title { font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); }
+.win__body { display: grid; grid-template-columns: 170px 1fr; height: calc(100% - 38px); }
+.win__side { display: grid; align-content: start; gap: 14px; padding: 20px 18px; border-right: 1px solid var(--line); background: var(--bg); }
+.win__side-row { display: flex; align-items: center; gap: 8px; margin: -6px -8px; padding: 6px 8px; border-radius: 8px; font-size: 0.8rem; font-weight: 500; }
+.win__side-row.is-active { background: var(--sunk); }
+.win__side-dot { width: 6px; height: 6px; border-radius: 99px; background: var(--accent); }
+.win__side-gap { height: 10px; }
+.ph { display: block; height: 8px; border-radius: 99px; background: var(--sunk); }
+.ph--w30 { width: 30%; } .ph--w40 { width: 40%; } .ph--w50 { width: 50%; } .ph--w60 { width: 60%; } .ph--w70 { width: 70%; } .ph--w80 { width: 80%; }
+.win__main { display: grid; align-content: start; gap: 18px; padding: 26px 28px; }
+.win__label { font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.win__prompt p { margin-top: 6px; font-family: var(--font-display); font-size: 1.15rem; letter-spacing: -0.02em; line-height: 1.25; max-width: 30ch; }
+.win__actions { display: flex; align-items: center; gap: 16px; }
+.win__actions .ph { flex: 0 0 120px; }
+.win__run, .reward__reset { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 14px; border-radius: 99px; font-size: 0.8rem; font-weight: 500; transition: transform 120ms var(--ease-out), background-color 160ms; }
+.win__run { background: var(--accent); color: var(--ink); }
+.win__run[data-pressed="true"], .reward__reset[data-pressed="true"] { transform: scale(0.95); }
+.win__steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; min-height: 132px; align-content: start; }
+.win__step { display: grid; grid-template-columns: 20px 1fr auto; align-items: center; gap: 10px; height: 38px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line); font-size: 0.78rem; }
+.win__step code { font-family: var(--font-mono); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.win__step code b { color: var(--ink); font-weight: 500; }
+.win__step-icon { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 99px; color: var(--surface); transition: background-color 240ms; }
+.win__step-icon[data-done="true"] { background: var(--ok); }
+.win__spin { width: 14px; height: 14px; border-radius: 99px; border: 2px solid var(--line-strong); border-top-color: var(--ink); animation: spin 700ms linear infinite; }
+.stage__cursor svg { display: block; transform-origin: 4px 3px; transition: transform 200ms var(--ease-out); }
+.stage__cursor[data-pressed="true"] svg { transform: scale(0.84); transition-duration: 80ms; }
+.win__ms { font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); }
+.win__filler { display: grid; gap: 10px; padding-top: 6px; }
+
+.stage__reward { position: absolute; right: 6%; bottom: 9%; width: 236px; padding: 16px 16px 14px; border-radius: 16px; background: var(--surface); box-shadow: var(--shadow-window); display: grid; gap: 10px; z-index: 2; }
+.reward__head { display: flex; justify-content: space-between; align-items: center; }
+.reward__delta { font-family: var(--font-mono); font-size: 0.72rem; color: var(--ok); }
+.reward__value { font-family: var(--font-display); font-size: 2.5rem; font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
+.reward__bars { display: flex; align-items: end; gap: 4px; height: 44px; }
+.reward__bars span { flex: 1; height: 100%; border-radius: 3px; background: var(--sunk); transform-origin: bottom; transition: transform 900ms var(--ease-expo, cubic-bezier(0.16,1,0.3,1)); }
+.reward__bars .is-now { background: var(--accent); }
+.reward__reset { justify-self: start; border: 1px solid var(--line); color: var(--ink-soft); background: var(--surface); }
+
+.stage__cursor { position: absolute; left: 0; top: 0; z-index: 5; margin: -3px 0 0 -4px; color: var(--ink); pointer-events: none; filter: drop-shadow(0 2px 3px rgb(23 47 67 / 0.25)); transform-origin: 4px 3px; transition: opacity 400ms; }
+
+/* Rolling digits */
+.roll { display: inline-flex; font-variant-numeric: tabular-nums; }
+.roll__col { display: inline-block; height: 1em; overflow: hidden; }
+.roll__strip { display: flex; flex-direction: column; transition: transform 900ms cubic-bezier(0.16, 1, 0.3, 1); }
+.roll__strip span, .roll__static { display: block; height: 1em; line-height: 1; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 640px) {
+  .stage { height: 440px; border-radius: 22px; }
+  .stage__window { left: 18px; top: 22px; width: 560px; }
+  .win__body { grid-template-columns: 1fr; }
+  .win__side { display: none; }
+  .win__main { padding: 20px; }
+  .stage__reward { right: 14px; bottom: 16px; width: 204px; }
+  .reward__value { font-size: 2.1rem; }
+}

@@ -1,252 +1,136 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import { motion } from "framer-motion";
-import { AlertCircle, CheckCircle, ExternalLink, Send } from "lucide-react";
-import PageIntro from "@/components/PageIntro";
+import { AnimatePresence, motion } from "framer-motion";
+import { AlertCircle, ArrowUpRight, Check, Copy, Send } from "lucide-react";
+import PageHead from "@/components/PageHead";
+import { Reveal, RevealItem } from "@/components/Reveal";
 import { contactChannels, profile } from "@/content/site";
 import { supabase } from "@/lib/supabase";
-import { containerVariants, itemVariants } from "@/lib/motion";
+import { ease, softSpring } from "@/lib/motion";
 
-interface FormData {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-}
-
-interface FormStatus {
-  type: "idle" | "loading" | "success" | "error";
-  message: string;
-}
+const empty = { name: "", email: "", subject: "", message: "" };
+type Status = { type: "idle" | "loading" | "success" | "error"; message: string };
 
 export default function Contact() {
-  const [formData, setFormData] = useState<FormData>({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
-  const [status, setStatus] = useState<FormStatus>({
-    type: "idle",
-    message: "",
-  });
+  const [form, setForm] = useState(empty);
+  const [status, setStatus] = useState<Status>({ type: "idle", message: "" });
+  const [copied, setCopied] = useState(false);
 
-  const handleInputChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = event.target;
-    setFormData((current) => ({ ...current, [name]: value }));
-  };
+  const onChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault();
-    setStatus({ type: "loading", message: "Sending message..." });
-
-    try {
-      const { error } = await supabase.from("contact_messages").insert([
-        {
-          name: formData.name,
-          email: formData.email,
-          subject: formData.subject,
-          message: formData.message,
-        },
-      ]);
-
-      if (error) {
-        throw error;
-      }
-
-      setStatus({
-        type: "success",
-        message: "Message sent successfully. I will get back to you soon.",
-      });
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
-        message: "",
-      });
-    } catch (error) {
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setStatus({ type: "loading", message: "" });
+    const { error } = await supabase.from("contact_messages").insert([form]);
+    if (error) {
       console.error("Error sending message:", error);
-      const message = error instanceof Error ? error.message : "Unknown error";
-      setStatus({
-        type: "error",
-        message: `Message failed to send. ${message}`,
-      });
+      setStatus({ type: "error", message: `Message failed to send. ${error.message}` });
+      return;
     }
+    setStatus({ type: "success", message: "Sent. I’ll get back to you soon." });
+    setForm(empty);
   };
+
+  const copyEmail = async () => {
+    await navigator.clipboard.writeText(profile.email);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1600);
+  };
+
+  const loading = status.type === "loading";
 
   return (
-    <div className="pb-8 pt-10">
-      <section className="page-wrap">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]"
+    <>
+      <PageHead eyebrow="Contact" title="Let’s make something useful.">
+        <p className="lede">Open to research collaborations, product roles, and thoughtful conversations.</p>
+      </PageHead>
+
+      <section className="wrap section contact">
+        <Reveal className="contact__side">
+          <RevealItem className="email-card">
+            <span className="mono">Fastest</span>
+            <a href={`mailto:${profile.email}`} className="email-card__addr">{profile.email}</a>
+            <button type="button" className="btn btn-line email-card__copy" onClick={copyEmail} aria-live="polite">
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.span
+                  key={copied ? "y" : "n"}
+                  className="inline-flex items-center gap-2"
+                  initial={{ opacity: 0, y: 8, filter: "blur(3px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, y: -8, filter: "blur(3px)" }}
+                  transition={{ duration: 0.22, ease: ease.out }}
+                >
+                  {copied ? <Check size={15} /> : <Copy size={15} />} {copied ? "Copied" : "Copy address"}
+                </motion.span>
+              </AnimatePresence>
+            </button>
+          </RevealItem>
+          <RevealItem className="channels">
+            {contactChannels.filter((c) => c.label !== "Email").map((c) => (
+              <a key={c.label} href={c.href} target="_blank" rel="noreferrer" className="channels__row">
+                <span className="mono">{c.label}</span>
+                <span>{c.value}</span>
+                <ArrowUpRight size={16} aria-hidden="true" />
+              </a>
+            ))}
+            <a href={profile.github} target="_blank" rel="noreferrer" className="channels__row">
+              <span className="mono">GitHub</span>
+              <span>666keke</span>
+              <ArrowUpRight size={16} aria-hidden="true" />
+            </a>
+          </RevealItem>
+          <RevealItem as="p" className="body">Based in Beijing; moving to Toronto in Fall 2026. Remote-friendly now.</RevealItem>
+        </Reveal>
+
+        <motion.form
+          onSubmit={onSubmit}
+          className="form"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: ease.expo, delay: 0.2 }}
         >
-          <motion.div variants={itemVariants}>
-            <PageIntro
-              eyebrow="Contact"
-              title="Let’s make something useful."
-              description="I’m open to research collaborations, product roles, and thoughtful conversations. Send a note or reach out directly."
-            />
+          <div className="form__pair">
+            <label className="field">
+              <input name="name" value={form.name} onChange={onChange} required placeholder=" " autoComplete="name" />
+              <span>Name</span>
+            </label>
+            <label className="field">
+              <input type="email" name="email" value={form.email} onChange={onChange} required placeholder=" " autoComplete="email" />
+              <span>Email</span>
+            </label>
+          </div>
+          <label className="field">
+            <input name="subject" value={form.subject} onChange={onChange} required placeholder=" " />
+            <span>Subject</span>
+          </label>
+          <label className="field">
+            <textarea name="message" value={form.message} onChange={onChange} required rows={7} placeholder=" " />
+            <span>Message</span>
+          </label>
 
-            <div className="editorial-list mt-10">
-              {contactChannels.map((channel) => (
-                <a
-                  key={channel.label}
-                  href={channel.href}
-                  target={channel.href.startsWith("http") ? "_blank" : undefined}
-                  rel={channel.href.startsWith("http") ? "noreferrer" : undefined}
-                  className="grid gap-3 py-5 md:grid-cols-[140px_1fr_auto]"
+          <div className="form__foot">
+            <AnimatePresence mode="wait">
+              {(status.type === "success" || status.type === "error") && (
+                <motion.p
+                  key={status.type}
+                  role="status"
+                  className={`form__status is-${status.type}`}
+                  initial={{ opacity: 0, x: -6 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3, ease: ease.out }}
                 >
-                  <span className="mono text-[0.64rem] text-[color:var(--muted)]">
-                    {channel.label}
-                  </span>
-                  <span className="text-xl text-[color:var(--ink)]">
-                    {channel.value}
-                  </span>
-                  <ExternalLink className="h-4 w-4 self-center text-[color:var(--muted)]" />
-                </a>
-              ))}
-            </div>
-
-            <div className="paper-strip mt-10 rounded-[2rem] p-6 sm:p-8">
-              <p className="mono text-[0.68rem] text-[color:var(--muted)]">
-                Availability
-              </p>
-              <p className="display-line mt-5 text-[color:var(--ink)]">
-                Remote-friendly now, preparing for Toronto in Fall 2026.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <a
-                  href={profile.github}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="button-outline"
-                >
-                  GitHub
-                </a>
-                <a
-                  href={profile.linkedin}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="button-solid"
-                >
-                  LinkedIn
-                </a>
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div variants={itemVariants}>
-            <div className="paper-strip rounded-[2rem] p-6 sm:p-8 lg:p-10">
-              <span className="kicker">Form</span>
-              <h2 className="section-title mt-6 text-[color:var(--ink)]">
-                Say hello.
-              </h2>
-              <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <label className="block">
-                    <span className="mono text-[0.64rem] text-[color:var(--muted)]">
-                      Name
-                    </span>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      required
-                      className="mt-3 w-full border-b border-[color:var(--line-strong)] bg-transparent px-0 py-3 text-lg text-[color:var(--ink)] outline-none placeholder:text-[color:var(--muted)]"
-                      placeholder="Your name"
-                    />
-                  </label>
-                  <label className="block">
-                    <span className="mono text-[0.64rem] text-[color:var(--muted)]">
-                      Email
-                    </span>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                      className="mt-3 w-full border-b border-[color:var(--line-strong)] bg-transparent px-0 py-3 text-lg text-[color:var(--ink)] outline-none placeholder:text-[color:var(--muted)]"
-                      placeholder="name@example.com"
-                    />
-                  </label>
-                </div>
-
-                <label className="block">
-                  <span className="mono text-[0.64rem] text-[color:var(--muted)]">
-                    Subject
-                  </span>
-                  <input
-                    type="text"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleInputChange}
-                    required
-                    className="mt-3 w-full border-b border-[color:var(--line-strong)] bg-transparent px-0 py-3 text-lg text-[color:var(--ink)] outline-none placeholder:text-[color:var(--muted)]"
-                    placeholder="What is this about?"
-                  />
-                </label>
-
-                <label className="block">
-                  <span className="mono text-[0.64rem] text-[color:var(--muted)]">
-                    Message
-                  </span>
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    required
-                    rows={7}
-                    className="mt-3 w-full resize-none rounded-xl border border-[color:var(--line)] bg-white px-4 py-4 text-lg text-[color:var(--ink)] outline-none placeholder:text-[color:var(--muted)]"
-                    placeholder="Tell me about the work, the role, or the problem you want to solve."
-                  />
-                </label>
-
-                {status.type !== "idle" && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center gap-3 text-sm"
-                    style={{
-                      color:
-                        status.type === "success"
-                          ? "#2f6643"
-                          : status.type === "error"
-                            ? "#b94d3d"
-                            : "var(--muted)",
-                    }}
-                  >
-                    {status.type === "success" && <CheckCircle className="h-4 w-4" />}
-                    {status.type === "error" && <AlertCircle className="h-4 w-4" />}
-                    {status.type === "loading" && (
-                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                    )}
-                    <span>{status.message}</span>
-                  </motion.div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={status.type === "loading"}
-                  className="button-solid w-full disabled:cursor-not-allowed disabled:opacity-70"
-                >
-                  {status.type === "loading" ? (
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                  ) : (
-                    <Send className="h-4 w-4" />
-                  )}
-                  {status.type === "loading" ? "Sending..." : "Send message"}
-                </button>
-              </form>
-            </div>
-          </motion.div>
-        </motion.div>
+                  {status.type === "success" ? <Check size={15} /> : <AlertCircle size={15} />} {status.message}
+                </motion.p>
+              )}
+            </AnimatePresence>
+            <motion.button type="submit" disabled={loading} className="btn btn-solid form__send" layout transition={softSpring}>
+              {loading ? <span className="win__spin form__spin" aria-hidden="true" /> : <Send size={15} />}
+              {loading ? "Sending…" : "Send message"}
+            </motion.button>
+          </div>
+        </motion.form>
       </section>
-    </div>
+    </>
   );
 }
